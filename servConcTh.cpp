@@ -3,29 +3,33 @@
 #include <netinet/in.h>
 #include <errno.h>
 #include <unistd.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstring>
+#include <string>
+#include <cstdlib>
 #include <signal.h>
 #include <pthread.h>
 #include <stdint.h>
+#include <iostream>
 
 #define PORT 2908
+
+using namespace std;
 
 typedef struct thData
 {
 	int idThread;
 	int cl;
 } thData;
-
+string readString(int);
 static void *treat(void *);
 void raspunde(void *);
-
+int RSWD(string&,int);
+int WSWD(string,int);
 int main()
 {
 	struct sockaddr_in server;
 	struct sockaddr_in from;
-	int nr;
 	int sd;
 	int pid;
 	pthread_t th[100];
@@ -84,7 +88,7 @@ static void *treat(void *arg)
 {
 	struct thData tdL;
 	tdL = *((struct thData *)arg);
-	printf("[thread]- %d - Asteptam mesajul...\n", tdL.idThread);
+	printf("[thread]- %d - Asteptam comenzi...\n", tdL.idThread);
 	fflush(stdout);
 	pthread_detach(pthread_self());
 	raspunde((struct thData *)arg);
@@ -94,26 +98,50 @@ static void *treat(void *arg)
 
 void raspunde(void *arg)
 {
-	
-	int nr, i = 0;
+	string command="";
 	struct thData tdL;
-	tdL = *((struct thData *)arg);
-	if (read(tdL.cl, &nr, sizeof(int)) <= 0)
-	{
-		printf("[Thread %d]\n", tdL.idThread);
-		perror("Eroare la read() de la client.\n");
+	tdL = *((struct thData*)arg);
+	while (1){
+		command="";
+		if (RSWD(command, tdL.cl) == -1) {
+			printf("[Thread %d]", tdL.idThread);
+			perror("Eroare la citirea comenzii de la client: ");
+			break;
+		}
+		if (command=="") break;
+		fflush(stdout);
+		printf("[Thread %d]Comanda a fost receptionata...%s\n", tdL.idThread, command.c_str());
+		if (WSWD(command + " - OK", tdL.cl) == -1) {
+			perror("Eroare la trimitere spre client");
+			break;
+		}
+		printf("message sent!\n");
 	}
+}
 
-	printf("[Thread %d]Mesajul a fost receptionat...%d\n", tdL.idThread, nr);
-
-	nr++;
-	printf("[Thread %d]Trimitem mesajul inapoi...%d\n", tdL.idThread, nr);
-
-	if (write(tdL.cl, &nr, sizeof(int)) <= 0)
-	{
-		printf("[Thread %d] ", tdL.idThread);
-		perror("[Thread]Eroare la write() catre client.\n");
+int RSWD(string &command, int client) {
+	int nr = 0;
+	char c;
+	do {
+		if (read(client, &c, 1) == -1) {
+			return -1;
+		}
+		if (!isdigit(c)) break;
+		nr = nr * 10 + c - '0';
+	} while (1);
+	char *buf = new char[nr + 5];
+	if (read(client, buf, nr) == -1) {
+		return -1;
 	}
-	else
-		printf("[Thread %d]Mesajul a fost trasmis cu succes.\n", tdL.idThread);
+	buf[nr] = '\0';
+	command = buf;
+	return 1;
+}
+
+int WSWD(string s, int client) {
+	string r = to_string(s.size()) + " " + s;
+	if (write(client, r.c_str(), r.size()) == -1) {
+		return -1;
+	}
+	return 1;
 }
