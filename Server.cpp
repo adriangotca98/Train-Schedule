@@ -16,77 +16,76 @@
 
 using namespace std;
 
-typedef struct thData{
+typedef struct ThreadData{
 	int idThread;
-	int cl;
+	int client;
 } thData;
+struct sockaddr_in server;
+struct sockaddr_in from;
+int serverDescriptor;
+int so_reuseaddr = 1;
+pthread_t threadList[100];
+int i = 0;
 string readString(int);
 static void *treat(void *);
 void raspunde(void *);
 int RSWD(string&,int);
 int WSWD(string,int);
 int main(){
-	struct sockaddr_in server;
-	struct sockaddr_in from;
-	int sd;
-	int pid;
-	pthread_t th[100];
-	int i = 0;
-	if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1){
+	if ((serverDescriptor = socket(AF_INET, SOCK_STREAM, 0)) == -1){
 		perror("[server]Eroare la socket().\n");
 		return errno;
 	}
-	int on = 1;
-	setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
+	setsockopt(serverDescriptor, SOL_SOCKET, SO_REUSEADDR, &so_reuseaddr, sizeof(so_reuseaddr));
 	bzero(&server, sizeof(server));
 	bzero(&from, sizeof(from));
 	server.sin_family = AF_INET;
 	server.sin_addr.s_addr = htonl(INADDR_ANY);
 	server.sin_port = htons(PORT);
-	if (bind(sd, (struct sockaddr *)&server, sizeof(struct sockaddr)) == -1) {
+	if (bind(serverDescriptor, (struct sockaddr *)&server, sizeof(struct sockaddr)) == -1) {
 		perror("[server]Eroare la bind().\n");
 		return errno;
 	}
-	if (listen(sd, 2) == -1){
+	if (listen(serverDescriptor, 2) == -1){
 		perror("[server]Eroare la listen().\n");
 		return errno;
 	}
 	while (1){
-		int client;
-		thData *td;
+		int clientDescriptor;
+		ThreadData *threadData;
 		int length = sizeof(from);
 		printf("[server]Asteptam la portul %d...\n", PORT);
 		fflush(stdout);
-		client = accept(sd, (struct sockaddr *)&from, (socklen_t*)&length);
-		if (client < 0) {
+		clientDescriptor = accept(serverDescriptor, (struct sockaddr *)&from, (socklen_t*)&length);
+		if (clientDescriptor < 0) {
 			perror("[server]Eroare la accept().\n");
 			continue;
 		}
-		td = (struct thData *)malloc(sizeof(struct thData));
-		td->idThread = i++;
-		td->cl = client;
-		pthread_create(&th[i], NULL, &treat, td);
+		threadData = new ThreadData();
+		threadData->idThread = i++;
+		threadData->client = clientDescriptor;
+		pthread_create(&threadList[i], NULL, &treat, threadData);
 	}
 }
 
 static void *treat(void *arg) {
-	struct thData tdL;
-	tdL = *((struct thData *)arg);
+	struct ThreadData tdL;
+	tdL = *((struct ThreadData *)arg);
 	printf("[thread]- %d - Asteptam comenzi...\n", tdL.idThread);
 	fflush(stdout);
 	pthread_detach(pthread_self());
-	raspunde((struct thData *)arg);
+	raspunde((struct ThreadData *)arg);
 	close((intptr_t)arg);
 	return (NULL);
 }
 
 void raspunde(void *arg){
 	string command="";
-	struct thData tdL;
-	tdL = *((struct thData*)arg);
+	struct ThreadData tdL;
+	tdL = *((struct ThreadData*)arg);
 	while (1) {
 		command="";
-		if (RSWD(command, tdL.cl) == -1) {
+		if (RSWD(command, tdL.client) == -1) {
 			printf("[Thread %d]", tdL.idThread);
 			perror("Eroare la citirea comenzii de la client: ");
 			break;
@@ -94,7 +93,7 @@ void raspunde(void *arg){
 		if (command=="") break;
 		fflush(stdout);
 		printf("[Thread %d]Comanda a fost receptionata...%s\n", tdL.idThread, command.c_str());
-		if (WSWD(command + " - OK", tdL.cl) == -1) {
+		if (WSWD(command + " - OK", tdL.client) == -1) {
 			perror("Eroare la trimitere spre client");
 			break;
 		}

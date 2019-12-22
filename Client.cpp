@@ -20,7 +20,7 @@ int WSWD(string,int);
 int RBBB(string&);
 int main(int argc, char *argv[])
 {
-	int sd;
+	int serverDescriptor;
 	struct sockaddr_in server;
 	if (argc != 3)
 	{
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 
 	port = atoi(argv[2]);
 
-	if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+	if ((serverDescriptor = socket(AF_INET, SOCK_STREAM, 0)) == -1)
 	{
 		perror("Eroare la socket().\n");
 		return errno;
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 	server.sin_addr.s_addr = inet_addr(argv[1]);
 	server.sin_port = htons(port);
 
-	if (connect(sd, (struct sockaddr *) &server, sizeof(struct sockaddr)) == -1)
+	if (connect(serverDescriptor, (struct sockaddr *) &server, sizeof(struct sockaddr)) == -1)
 	{
 		perror("[client]Eroare la connect().\n");
 		return errno;
@@ -54,17 +54,17 @@ int main(int argc, char *argv[])
 			perror("[client] Eroare la citirea comenzii: ");
 			break;
 		}
-		if (WSWD(command, sd) == -1) {
+		if (WSWD(command, serverDescriptor) == -1) {
 			perror("[client] Eroare la trimiterea comenzii spre server");
 			break;
 		}
-		if (RSWD(response, sd) == -1) {
+		if (RSWD(response, serverDescriptor) == -1) {
 			perror("[client] Eroare la citirea raspunsului la comanda: ");
 			break;
 		}
 		cout << response << '\n';
 	}
-	close(sd);
+	close(serverDescriptor);
 }
 
 int RSWD(string &command, int client) {
