@@ -11,6 +11,7 @@
 #include <pthread.h>
 #include <stdint.h>
 #include <iostream>
+#include "CommandParser.h"
 
 #define PORT 2908
 
@@ -33,7 +34,7 @@ int RSWD(string&,int);
 int WSWD(string,int);
 int main(){
 	if ((serverDescriptor = socket(AF_INET, SOCK_STREAM, 0)) == -1){
-		perror("[server]Eroare la socket().\n");
+		perror("Eroare la socket().\n");
 		return errno;
 	}
 	setsockopt(serverDescriptor, SOL_SOCKET, SO_REUSEADDR, &so_reuseaddr, sizeof(so_reuseaddr));
@@ -43,22 +44,22 @@ int main(){
 	server.sin_addr.s_addr = htonl(INADDR_ANY);
 	server.sin_port = htons(PORT);
 	if (bind(serverDescriptor, (struct sockaddr *)&server, sizeof(struct sockaddr)) == -1) {
-		perror("[server]Eroare la bind().\n");
+		perror("Eroare la bind().\n");
 		return errno;
 	}
 	if (listen(serverDescriptor, 2) == -1){
-		perror("[server]Eroare la listen().\n");
+		perror("Eroare la listen().\n");
 		return errno;
 	}
 	while (1){
 		int clientDescriptor;
 		ThreadData *threadData;
 		int length = sizeof(from);
-		printf("[server]Asteptam la portul %d...\n", PORT);
+		printf("Asteptam la portul %d...\n", PORT);
 		fflush(stdout);
 		clientDescriptor = accept(serverDescriptor, (struct sockaddr *)&from, (socklen_t*)&length);
 		if (clientDescriptor < 0) {
-			perror("[server]Eroare la accept().\n");
+			perror("Eroare la accept().\n");
 			continue;
 		}
 		threadData = new ThreadData();
@@ -69,9 +70,7 @@ int main(){
 }
 
 static void *treat(void *arg) {
-	struct ThreadData tdL;
-	tdL = *((struct ThreadData *)arg);
-	printf("[thread]- %d - Asteptam comenzi...\n", tdL.idThread);
+	printf("Asteptam comenzi...\n");
 	fflush(stdout);
 	pthread_detach(pthread_self());
 	raspunde((struct ThreadData *)arg);
@@ -80,20 +79,20 @@ static void *treat(void *arg) {
 }
 
 void raspunde(void *arg){
-	string command="";
+	string request="", response="";
 	struct ThreadData tdL;
 	tdL = *((struct ThreadData*)arg);
 	while (1) {
-		command="";
-		if (RSWD(command, tdL.client) == -1) {
-			printf("[Thread %d]", tdL.idThread);
+		request="";
+		if (RSWD(request, tdL.client) == -1) {
 			perror("Eroare la citirea comenzii de la client: ");
 			break;
 		}
-		if (command=="") break;
+		if (request=="") break;
 		fflush(stdout);
-		printf("[Thread %d]Comanda a fost receptionata...%s\n", tdL.idThread, command.c_str());
-		if (WSWD(command + " - OK", tdL.client) == -1) {
+		printf("Comanda a fost receptionata...%s\n", request.c_str());
+		string response = CommandParser::parse(request);
+		if (WSWD(response, tdL.client) == -1) {
 			perror("Eroare la trimitere spre client");
 			break;
 		}

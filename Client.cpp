@@ -42,24 +42,24 @@ int main(int argc, char *argv[])
 
 	if (connect(serverDescriptor, (struct sockaddr *) &server, sizeof(struct sockaddr)) == -1)
 	{
-		perror("[client]Eroare la connect().\n");
+		perror("Eroare la connect().\n");
 		return errno;
 	}
 
 	while (1) {
 		string command = "", response = "";
-		printf("[client] Introduceti comanda: ");
+		printf("Introduceti comanda: ");
 		fflush(stdout);
 		if (RBBB(command) == -1) {
-			perror("[client] Eroare la citirea comenzii: ");
+			perror("Eroare la citirea comenzii: ");
 			break;
 		}
 		if (WSWD(command, serverDescriptor) == -1) {
-			perror("[client] Eroare la trimiterea comenzii spre server");
+			perror("Eroare la trimiterea comenzii spre server");
 			break;
 		}
 		if (RSWD(response, serverDescriptor) == -1) {
-			perror("[client] Eroare la citirea raspunsului la comanda: ");
+			perror("Eroare la citirea raspunsului la comanda: ");
 			break;
 		}
 		cout << response << '\n';
