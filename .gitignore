@@ -1,3 +1,5 @@
 **/.vscode
 Client
 Server
+rapidxml/*
+compile.sh

@@ -1,15 +1,9 @@
-#include <arpa/inet.h>
+#include <bits/stdc++.h>
+#include <netinet/in.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
-#include <cerrno>
+#include <arpa/inet.h>
 #include <unistd.h>
-#include <cstdio>
-#include <cstdlib>
-#include <netdb.h>
-#include <cstring>
-#include <string>
-#include <iostream>
 
 using namespace std;
 
