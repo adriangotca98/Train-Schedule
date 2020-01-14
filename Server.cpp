@@ -9,6 +9,7 @@
 #include "Classes/CommandParser.h"
 #include "Classes/LoginCommand.h"
 #include "Classes/DisplayDayCommand.h"
+#include "Classes/LogoutCommand.h"
 
 #define PORT 2908
 
@@ -116,12 +117,12 @@ void raspunde(void *arg)
 					response+="\n"+command->execute();
 				}
 			}
-			/*else if (response.substr(4) == "get")
+			else if (response.substr(3) == "logout")
+				command = new LogoutCommand(&user), response = command->execute();
+			/*else if (response.substr(3) == "get")
 				command = new GetCommand(), response = command->execute();
-			else if (response.substr(4) == "update")
-				command = new UpdateCommand(), response = command->execute();
-			else if (response.substr(4) == "logout")
-				command = new LogoutCommand(), response = command->execute();*/
+			else if (response.substr(3) == "update")
+				command = new UpdateCommand(), response = command->execute();*/
 		}
 		fflush(stdout);
 		if (WSWD(response, threadData.client) == -1)
