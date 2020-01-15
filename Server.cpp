@@ -10,6 +10,7 @@
 #include "Classes/LoginCommand.h"
 #include "Classes/DisplayDayCommand.h"
 #include "Classes/LogoutCommand.h"
+#include "Classes/GetCommand.h"
 
 #define PORT 2908
 
@@ -117,11 +118,17 @@ void raspunde(void *arg)
 					response+="\n"+command->execute();
 				}
 			}
-			else if (response.substr(3) == "logout")
-				command = new LogoutCommand(&user), response = command->execute();
-			/*else if (response.substr(3) == "get")
-				command = new GetCommand(), response = command->execute();
-			else if (response.substr(3) == "update")
+			else if (response.substr(3) == "logout"){
+				command = new LogoutCommand(&user);
+				command->parse(request);
+				response = command->execute();
+			}
+			else if (response.substr(3) == "get") {
+				command = new GetCommand(trains,now,users,&user);
+				command->parse(request);
+				response = command->execute();
+			}
+			/*else if (response.substr(3) == "update")
 				command = new UpdateCommand(), response = command->execute();*/
 		}
 		fflush(stdout);

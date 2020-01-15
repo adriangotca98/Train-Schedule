@@ -8,7 +8,7 @@ class DisplayDayCommand : public Command {
     xml_document<>* trains;
     loggedUser* user;
     string stationName;
-    set<entry> entries;
+    multiset<entry> entries;
 public:
     DisplayDayCommand(xml_document<>* trains, loggedUser* user);
     string execute();
