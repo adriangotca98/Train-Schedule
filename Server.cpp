@@ -11,6 +11,7 @@
 #include "Classes/DisplayDayCommand.h"
 #include "Classes/LogoutCommand.h"
 #include "Classes/GetCommand.h"
+#include "Classes/UpdateCommand.h"
 
 #define PORT 2908
 
@@ -124,12 +125,21 @@ void raspunde(void *arg)
 				response = command->execute();
 			}
 			else if (response.substr(3) == "get") {
-				command = new GetCommand(trains,now,users,&user);
+				command = new GetCommand(trains,now,&user);
 				command->parse(request);
 				response = command->execute();
 			}
-			/*else if (response.substr(3) == "update")
-				command = new UpdateCommand(), response = command->execute();*/
+			else if (response.substr(3) == "update"){
+				command = new UpdateCommand(trains,now,users,&user);
+				command->parse(request);
+				response = command->execute();
+				ofstream f1("users.xml");
+				f1<<*users;
+				ofstream f2("now.xml");
+				f2<<*now;
+				f1.close();
+				f2.close();
+			}
 		}
 		fflush(stdout);
 		if (WSWD(response, threadData.client) == -1)

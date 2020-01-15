@@ -2,10 +2,9 @@
 #include <vector>
 #include <cstring>
 
-GetCommand::GetCommand(xml_document<> *trains, xml_document<> *now, xml_document<> *users, loggedUser *user){
+GetCommand::GetCommand(xml_document<> *trains, xml_document<> *now, loggedUser *user){
     this->trains=trains;
     this->now=now;
-    this->users=users;
     this->user=user;
 }
 
@@ -41,9 +40,9 @@ string GetCommand::execute(){
         if (typeOfGet=="nhd"&&user->entityRepresented==arrival) continue;
         bool ok=false;
         for (xml_node<> *moving=now->first_node()->first_node();moving;moving=moving->next_sibling()){
-            if (moving->first_attribute("train")==train.first->first_attribute("Id")){
+            if (string(moving->first_attribute("trainNumber")->value())==trainName){
                 int delay=atoi(moving->first_attribute("delay")->value());
-                int nr_station=atoi(string(moving->first_attribute("last_update")->value()).substr(2).c_str());
+                int nr_station=atoi(string(moving->first_attribute("lastUpdate")->value()).substr(2).c_str());
                 if (nr_station>=train.second) continue;
                 xml_node<> *theory=moving->first_node();
                 for (int i=1;i<nr_station;theory=theory->next_sibling(),i++);

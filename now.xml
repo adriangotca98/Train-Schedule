@@ -1,3 +1,26 @@
 <Moving>
-
+	<train trainNumber="IR1633" lastUpdate="a_2" Id="IR1633_1" delay="2">
+		<Statie DataOraPlecare="12.12.2020 15:09" DataOraSosire="12.12.2020 15:09" Nume="Bucuresti Nord Gr.A"/>
+		<Statie Nume="Chitila" DataOraSosire="12.12.2020 15:18" DataOraPlecare="12.12.2020 15:19"/>
+		<Statie Nume="P. mac. R1 Buciumeni" DataOraSosire="12.12.2020 15:20" DataOraPlecare="12.12.2020 15:21"/>
+		<Statie Nume="Buftea" DataOraSosire="12.12.2020 15:22" DataOraPlecare="12.12.2020 15:23"/>
+		<Statie Nume="Peris" DataOraSosire="12.12.2020 15:28" DataOraPlecare="12.12.2020 15:29"/>
+		<Statie Nume="Crivina" DataOraSosire="12.12.2020 15:33" DataOraPlecare="12.12.2020 15:34"/>
+		<Statie Nume="Brazi" DataOraSosire="12.12.2020 15:39" DataOraPlecare="12.12.2020 15:40"/>
+		<Statie Nume="P. M. Ram. Ploiesti Tj." DataOraSosire="12.12.2020 15:43" DataOraPlecare="12.12.2020 15:44"/>
+		<Statie Nume="Ploiesti Vest" DataOraSosire="12.12.2020 15:46" DataOraPlecare="12.12.2020 15:47"/>
+		<Statie Nume="Buda" DataOraSosire="12.12.2020 15:52" DataOraPlecare="12.12.2020 15:53"/>
+		<Statie Nume="Floresti Prahova" DataOraSosire="12.12.2020 15:58" DataOraPlecare="12.12.2020 15:59"/>
+		<Statie Nume="Campina" DataOraSosire="12.12.2020 16:08" DataOraPlecare="12.12.2020 16:10"/>
+		<Statie Nume="Comarnic" DataOraSosire="12.12.2020 16:21" DataOraPlecare="12.12.2020 16:22"/>
+		<Statie Nume="Valea Larga Hm." DataOraSosire="12.12.2020 16:29" DataOraPlecare="12.12.2020 16:30"/>
+		<Statie Nume="Sinaia" DataOraSosire="12.12.2020 16:33" DataOraPlecare="12.12.2020 16:34"/>
+		<Statie Nume="Busteni" DataOraSosire="12.12.2020 16:41" DataOraPlecare="12.12.2020 16:42"/>
+		<Statie Nume="Azuga" DataOraSosire="12.12.2020 16:47" DataOraPlecare="12.12.2020 16:48"/>
+		<Statie Nume="Predeal" DataOraSosire="12.12.2020 16:56" DataOraPlecare="12.12.2020 16:57"/>
+		<Statie Nume="Timisu de Sus Hm." DataOraSosire="12.12.2020 17:11" DataOraPlecare="12.12.2020 17:12"/>
+		<Statie Nume="Darste" DataOraSosire="12.12.2020 17:26" DataOraPlecare="12.12.2020 17:27"/>
+		<Statie Nume="Brasov" DataOraSosire="12.12.2020 17:36" DataOraPlecare="12.12.2020 17:36"/>
+	</train>
 </Moving>
+
